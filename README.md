@@ -56,6 +56,14 @@ Get a key through [Google AI Studio](https://aistudio.google.com/app/apikey). Do
 
 Save the file and close Notepad.
 
+If you created `.env` from an older version of this repository, change its model line to:
+
+```dotenv
+GEMINI_MODEL=gemini-flash-latest
+```
+
+The `404 NOT_FOUND` message saying that `gemini-2.5-flash` is unavailable means the key was read correctly, but that model is not available for the account. The configurable `gemini-flash-latest` alias is now the project default.
+
 ### 4. Start the application
 
 In the same PowerShell window, run:
@@ -78,6 +86,8 @@ Open a second PowerShell window in the same folder, or stop Streamlit first, the
 
 The first two checks do not call Gemini. The integrated check uses your API key and may incur API usage.
 
+The integrated runner reads `.env` automatically. If the key is missing, it stops with a short setup message instead of a Python `KeyError` traceback.
+
 ## macOS/Linux quick start
 
 Python 3.11–3.14 is supported.
@@ -98,7 +108,7 @@ The default data folder is the repository root. In the sidebar, select any other
 | Variable | Required | Meaning |
 |---|---:|---|
 | `GEMINI_API_KEY` | Yes | Private credential from Google AI Studio. |
-| `GEMINI_MODEL` | No | Function-calling model name. |
+| `GEMINI_MODEL` | No | Function-calling model name; defaults to `gemini-flash-latest`. |
 | `MAX_AGENT_STEPS` | No | Maximum routing/tool steps. |
 | `MAX_OUTPUT_TOKENS` | No | Maximum model output tokens. |
 

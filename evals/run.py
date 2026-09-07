@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 from finance_assistant.data import DataRepository
 from finance_assistant.orchestrator import Assistant
@@ -35,6 +38,9 @@ def main() -> int:
     parser.add_argument("--data", default=".")
     parser.add_argument("--integrated", action="store_true", help="Route exact questions through Gemini")
     args = parser.parse_args()
+    load_dotenv()
+    if args.integrated and not os.getenv("GEMINI_API_KEY"):
+        parser.error("GEMINI_API_KEY is missing. Create .env in the repository root and add your key.")
     cases = json.loads((Path(__file__).parent / "questions.json").read_text())
     tools = FinanceTools(DataRepository(args.data))
     failures = 0

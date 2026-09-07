@@ -17,7 +17,7 @@ st.caption("Source-grounded analysis for Meridian Instruments")
 with st.sidebar:
     st.header("Run settings")
     folder = st.text_input("Data folder", value=".")
-    st.text_input("Gemini model", value=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"), key="model")
+    st.text_input("Gemini model", value=os.getenv("GEMINI_MODEL", "gemini-flash-latest"), key="model")
     st.caption("The API key is read from GEMINI_API_KEY and is never displayed or traced.")
 
 examples = [
@@ -38,7 +38,7 @@ if st.button("Analyze", type="primary", disabled=not question.strip()):
         st.subheader(labels[result.status])
         st.write(result.summary)
         if result.data:
-            st.dataframe(pd.json_normalize(result.data), use_container_width=True, hide_index=True)
+            st.dataframe(pd.json_normalize(result.data), width="stretch", hide_index=True)
         left, right = st.columns(2)
         with left:
             st.markdown("#### How this was calculated")

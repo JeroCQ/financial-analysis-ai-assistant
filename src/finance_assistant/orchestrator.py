@@ -46,7 +46,7 @@ class Assistant:
     def __init__(self, tools: FinanceTools, trace_dir: str | Path = "traces", model: str | None = None):
         self.tools = tools
         self.trace_dir = Path(trace_dir)
-        self.model = model or os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+        self.model = model or os.getenv("GEMINI_MODEL", "gemini-flash-latest")
         self.max_steps = int(os.getenv("MAX_AGENT_STEPS", "4"))
         self.max_tokens = int(os.getenv("MAX_OUTPUT_TOKENS", "2048"))
 

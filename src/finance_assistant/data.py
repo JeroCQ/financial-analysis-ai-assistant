@@ -43,8 +43,8 @@ class DataRepository:
     @property
     def coa(self) -> pd.DataFrame:
         frame = self._read("chart_of_accounts.csv")
-        frame["valid_from"] = pd.to_datetime(frame["valid_from"], errors="raise")
-        frame["valid_to"] = pd.to_datetime(frame["valid_to"], errors="coerce").fillna(pd.Timestamp.max.normalize())
+        frame["valid_from"] = pd.to_datetime(frame["valid_from"], format="%Y-%m-%d", errors="raise")
+        frame["valid_to"] = pd.to_datetime(frame["valid_to"], format="%Y-%m-%d", errors="coerce").fillna(pd.Timestamp.max.normalize())
         return frame
 
     @property
