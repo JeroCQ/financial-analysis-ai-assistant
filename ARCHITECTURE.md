@@ -4,7 +4,7 @@
 
 The assistant is a bounded router, not an open-ended agent. Gemini receives the question and a fixed function schema, then chooses exactly one tool and validated arguments. This is useful for normal variations in wording, dates, quarters, limits, and intent. It cannot execute Python, SQL, filesystem paths, or arbitrary retries. Tool output—not model prose—is the answer, so the model never performs financial arithmetic or invents a source.
 
-Known paths stay deterministic. Each tool loads schema-validated files, applies dated joins and filters, computes, and returns a typed `ToolResult`. A run is at most one routing call plus one tool call. `MAX_AGENT_STEPS`, `MAX_OUTPUT_TOKENS`, and `MAX_RUN_COST_USD` are hard configuration ceilings. The tool allow-list is enforced in `dispatch`; Pydantic constrains states and route concepts. The current implementation intentionally does not use a planner/executor loop or multiple agents: none of the eight workflows benefits enough to justify added latency, cost, and failure modes.
+Known paths stay deterministic. Each tool loads schema-validated files, applies dated joins and filters, computes, and returns a typed `ToolResult`. A run is at most one routing call plus one tool call. `MAX_AGENT_STEPS` and `MAX_OUTPUT_TOKENS` are hard configuration ceilings. The tool allow-list is enforced in `dispatch`; Pydantic constrains states and route concepts. The current implementation intentionally does not use a planner/executor loop or multiple agents: none of the eight workflows benefits enough to justify added latency, cost, and failure modes.
 
 ## Tools
 
@@ -27,5 +27,4 @@ OPS-NA actuals are mapped to OPS-AMER only for budget comparison, based on the m
 
 ## Evidence and observability
 
-Every result carries status, rows, sources, warnings, missing information, and conventions. JSON traces record the question, short operational decision, arguments, summarized tool result, duration, token usage reported by Gemini, and estimated cost. Cost is `null` until the evaluator configures current input/output prices per million tokens from Google's identified pricing page; no stale price is embedded. Credentials and hidden reasoning are never recorded.
-
+Every result carries status, rows, sources, warnings, missing information, and conventions. JSON traces record the question, short operational decision, arguments, summarized tool result, duration, and token usage reported by Gemini. Credentials and hidden reasoning are never recorded.

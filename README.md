@@ -2,7 +2,83 @@
 
 A reviewable Streamlit prototype for Meridian Instruments. Gemini interprets a question and chooses one bounded tool; Python/Pandas performs every financial calculation and returns evidence, caveats, and a trace.
 
-## Quick start
+## Windows setup (PowerShell)
+
+You do **not** edit `.env.example` directly. It is a safe template committed to Git. Copy it to a new file named `.env`, then put your key in that private copy. `.env` is intentionally absent from a downloaded repository because committing credentials would be unsafe.
+
+### 1. Open the correct folder
+
+1. Download and unzip the repository.
+2. Open the unzipped folder in File Explorer—the folder that contains `app.py`, `README.md`, and the CSV files.
+3. Click the File Explorer address bar, type `powershell`, and press Enter.
+
+Create `.env` **inside that unzipped repository folder**, next to `app.py` and `.env.example`. Do not create it on the GitHub website, in Downloads outside the unzipped folder, or inside `.venv`.
+
+The PowerShell prompt should now end with the repository folder name. Confirm it with:
+
+```powershell
+Get-ChildItem app.py, README.md, gl_transactions.csv
+```
+
+If all three names appear, you are in the correct place.
+
+### 2. Check Python
+
+Install Python 3.12 from [python.org](https://www.python.org/downloads/) if this command does not print a Python version:
+
+```powershell
+py -3.12 --version
+```
+
+During Python installation, enable **Add Python to PATH** if offered.
+
+### 3. Create the environment
+
+Copy and paste these commands one at a time:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+Copy-Item .env.example .env
+notepad .env
+```
+
+`Copy-Item` creates the file in the correct place because PowerShell is already open in the repository folder. If Windows hides files beginning with a dot, you do not need to find it in File Explorer: the `notepad .env` command opens it directly.
+
+Notepad will open the private `.env` file. Replace only `paste_your_key_here`:
+
+```dotenv
+GEMINI_API_KEY=your_real_gemini_key
+```
+
+Get a key through [Google AI Studio](https://aistudio.google.com/app/apikey). Do not add quotes or spaces around it, do not share it, and never upload `.env` to GitHub.
+
+Save the file and close Notepad.
+
+### 4. Start the application
+
+In the same PowerShell window, run:
+
+```powershell
+.\.venv\Scripts\python.exe -m streamlit run app.py
+```
+
+Streamlit should open a browser tab. Keep PowerShell open while using the application. Stop it later with `Ctrl+C`.
+
+### 5. Run checks
+
+Open a second PowerShell window in the same folder, or stop Streamlit first, then run:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe evals\run.py --data .
+.\.venv\Scripts\python.exe evals\run.py --data . --integrated
+```
+
+The first two checks do not call Gemini. The integrated check uses your API key and may incur API usage.
+
+## macOS/Linux quick start
 
 Python 3.11–3.14 is supported.
 
@@ -17,7 +93,16 @@ streamlit run app.py
 
 The default data folder is the repository root. In the sidebar, select any other folder containing the same five CSV filenames and columns. Internal Markdown documents in that folder are available as cited evidence. Never commit `.env`.
 
-The integration uses Google's current `google-genai` SDK (`from google import genai`) and manual function calling. `GEMINI_MODEL` is configurable and must name a model that supports function calling. The default is a configurable starting value, not a guarantee of future availability. Check the [official model documentation](https://ai.google.dev/gemini-api/docs/models) and [pricing page](https://ai.google.dev/gemini-api/docs/pricing) before evaluation.
+## Environment variables
+
+| Variable | Required | Meaning |
+|---|---:|---|
+| `GEMINI_API_KEY` | Yes | Private credential from Google AI Studio. |
+| `GEMINI_MODEL` | No | Function-calling model name. |
+| `MAX_AGENT_STEPS` | No | Maximum routing/tool steps. |
+| `MAX_OUTPUT_TOKENS` | No | Maximum model output tokens. |
+
+The integration uses Google's current `google-genai` SDK (`from google import genai`) and manual function calling. `GEMINI_MODEL` is configurable and must name a model that supports function calling. The default is a configurable starting value, not a guarantee of future availability. Check the [official model documentation](https://ai.google.dev/gemini-api/docs/models) before evaluation.
 
 ## Evaluation and tests
 
@@ -42,7 +127,7 @@ python evals/run.py --data . --integrated
 - supported, partial, clarification, or insufficient-data status;
 - result tables and explicit period/currency/sign conventions;
 - calculation method, transaction/document evidence, warnings, and missing fields;
-- bounded steps, elapsed time, actual API token counts, and estimated cost when current prices are configured.
+- bounded steps, elapsed time, and actual API token counts.
 
 A trace is saved to `traces/<run-id>.json`. It includes the question, brief routing decision, tool arguments, summarized result, sources, warnings, duration, usage, and configured ceilings. It excludes API keys and private chain-of-thought. Example shape:
 
@@ -50,7 +135,7 @@ A trace is saved to `traces/<run-id>.json`. It includes the question, brief rout
 {
   "question": "What's our headcount cost per FTE?",
   "events": [
-    {"type": "model_route", "tool": "headcount_cost_per_fte", "arguments": {}, "usage": {"prompt_tokens": 0, "output_tokens": 0, "estimated_cost_usd": null}},
+    {"type": "model_route", "tool": "headcount_cost_per_fte", "arguments": {}, "usage": {"prompt_tokens": 0, "output_tokens": 0}},
     {"type": "tool_result", "status": "insufficient_data", "sources": ["board_memo_2024_q2.md#5-headcount"]}
   ]
 }

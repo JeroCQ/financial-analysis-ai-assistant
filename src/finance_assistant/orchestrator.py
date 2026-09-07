@@ -49,14 +49,6 @@ class Assistant:
         self.model = model or os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
         self.max_steps = int(os.getenv("MAX_AGENT_STEPS", "4"))
         self.max_tokens = int(os.getenv("MAX_OUTPUT_TOKENS", "2048"))
-        self.max_cost = float(os.getenv("MAX_RUN_COST_USD", "0.05"))
-
-    def _price(self, prompt_tokens: int, output_tokens: int) -> float | None:
-        raw_in = os.getenv("GEMINI_INPUT_USD_PER_MILLION")
-        raw_out = os.getenv("GEMINI_OUTPUT_USD_PER_MILLION")
-        if not raw_in or not raw_out:
-            return None
-        return prompt_tokens * float(raw_in) / 1_000_000 + output_tokens * float(raw_out) / 1_000_000
 
     def _route(self, question: str) -> tuple[str, dict[str, Any], dict[str, Any]]:
         client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
@@ -77,16 +69,14 @@ class Assistant:
         usage = response.usage_metadata
         prompt = int(getattr(usage, "prompt_token_count", 0) or 0)
         output = int(getattr(usage, "candidates_token_count", 0) or 0)
-        return calls[0].name, dict(calls[0].args or {}), {"prompt_tokens": prompt, "output_tokens": output, "estimated_cost_usd": self._price(prompt, output)}
+        return calls[0].name, dict(calls[0].args or {}), {"prompt_tokens": prompt, "output_tokens": output}
 
     def run(self, question: str) -> RunOutput:
         started = time.perf_counter()
-        trace: dict[str, Any] = {"run_id": str(uuid.uuid4()), "question": question, "model": self.model, "limits": {"steps": self.max_steps, "output_tokens": self.max_tokens, "cost_usd": self.max_cost}, "events": []}
+        trace: dict[str, Any] = {"run_id": str(uuid.uuid4()), "question": question, "model": self.model, "limits": {"steps": self.max_steps, "output_tokens": self.max_tokens}, "events": []}
         name, args, usage = self._route(question)
         trace["events"].append({"type": "model_route", "tool": name, "arguments": args, "usage": usage})
-        if usage["estimated_cost_usd"] is not None and usage["estimated_cost_usd"] > self.max_cost:
-            result = ToolResult(status="needs_clarification", summary="The configured run-cost ceiling was exceeded before tool execution.", warnings=["Increase MAX_RUN_COST_USD or select a lower-cost model."])
-        elif name == "clarify":
+        if name == "clarify":
             result = ToolResult(status="needs_clarification", summary=args.get("rationale", "Please provide the missing period or scope."))
         else:
             if self.max_steps < 2:
