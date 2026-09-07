@@ -1,0 +1,2 @@
+"""Finance assistant package."""
+
