@@ -14,6 +14,13 @@ REQUIRED = {
     "vendors.csv": {"vendor_id", "vendor_name", "category", "country"},
 }
 
+DOCUMENTS = {
+    "board_memo_2024_q2.md",
+    "contract_kestrel.md",
+    "contract_northgate_advisory.md",
+    "travel_expense_policy.md",
+}
+
 
 class DataRepository:
     def __init__(self, folder: str | Path):
@@ -64,4 +71,21 @@ class DataRepository:
         return self._read("vendors.csv")
 
     def documents(self) -> dict[str, str]:
-        return {p.name: p.read_text(encoding="utf-8") for p in sorted(self.folder.glob("*.md")) if p.name != "README.md"}
+        found: dict[str, str] = {}
+        for directory in (self.folder, self.folder / "docs"):
+            for name in DOCUMENTS:
+                path = directory / name
+                if path.is_file():
+                    found[name] = path.read_text(encoding="utf-8")
+        return dict(sorted(found.items()))
+
+    def document_excerpt(self, name: str, heading: str) -> dict[str, str] | None:
+        text = self.documents().get(name)
+        if text is None:
+            return None
+        marker = f"## {heading}"
+        start = text.find(marker)
+        if start < 0:
+            return {"source": name, "section": "full document", "text": text}
+        end = text.find("\n## ", start + len(marker))
+        return {"source": name, "section": heading, "text": text[start:end if end >= 0 else None].strip()}

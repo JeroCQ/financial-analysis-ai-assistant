@@ -34,7 +34,7 @@ if st.button("Analyze", type="primary", disabled=not question.strip()):
         repository = DataRepository(Path(folder))
         run = Assistant(FinanceTools(repository), model=st.session_state.model).run(question.strip())
         result = run.result
-        labels = {"supported": "Supported answer", "partial": "Partial answer", "needs_clarification": "Needs clarification", "insufficient_data": "Insufficient data"}
+        labels = {"supported": "Supported answer", "partial": "Partial answer", "needs_clarification": "Needs clarification", "insufficient_data": "Insufficient financial data", "provider_unavailable": "Gemini unavailable", "configuration_error": "Configuration error"}
         st.subheader(labels[result.status])
         st.write(result.summary)
         if result.data:
@@ -51,10 +51,22 @@ if st.button("Analyze", type="primary", disabled=not question.strip()):
             st.markdown("#### Evidence")
             for source in result.sources:
                 st.code(source)
+            for document in result.evidence.get("documents", []):
+                with st.expander(f"{document['source']} — {document['section']}"):
+                    st.markdown(document["text"])
             if result.missing:
                 st.markdown("#### Missing information")
                 for item in result.missing:
                     st.write(f"- {item}")
+        transactions = result.evidence.get("transactions", [])
+        if transactions:
+            st.markdown("#### Transaction evidence")
+            transaction_frame = pd.DataFrame(transactions)
+            st.dataframe(transaction_frame, width="stretch", hide_index=True)
+            st.download_button("Download evidence CSV", transaction_frame.to_csv(index=False), "transaction_evidence.csv", "text/csv")
+        if result.evidence.get("filters"):
+            st.markdown("#### Applied filters")
+            st.json(result.evidence["filters"])
         usage = run.trace["events"][0]["usage"]
         st.markdown("#### Run trace")
         st.write({"steps": len(run.trace["events"]), "duration_ms": run.trace["duration_ms"], **usage})

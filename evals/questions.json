@@ -3,50 +3,158 @@
     "id": "opex_q2",
     "question": "What did we spend on operating expenses in Q2, by cost center?",
     "tool": "operating_expenses",
-    "arguments": {"year": 2024, "quarter": 2},
+    "arguments": {
+      "year": 2024,
+      "quarter": 2
+    },
     "expected_status": "supported",
-    "expected": {"row_count": 9, "OPS-NA|USD": "2096018.97"},
-    "sources": ["gl_transactions.csv", "chart_of_accounts.csv"],
-    "notes": "Uses latest complete accrual year (2024); returns local-currency rows rather than adding unlike currencies."
+    "expected": {
+      "row_count": 9,
+      "OPS-NA|USD": "2096018.97",
+      "rows": {
+        "ENG-EU|EUR": "1277390.78",
+        "ENG-US|USD": "1254870.59",
+        "MKT-US|USD": "853906.97",
+        "OPS-CA|CAD": "2120219.20",
+        "OPS-EU|EUR": "2102863.14",
+        "OPS-NA|USD": "2096018.97",
+        "SGA-CA|CAD": "1035963.34",
+        "SGA-EU|EUR": "1036322.47",
+        "SGA-US|USD": "1063887.61"
+      }
+    },
+    "sources": [
+      "gl_transactions.csv",
+      "chart_of_accounts.csv"
+    ],
+    "notes": "Uses 2024 because it has ledger activity in all 12 accrual months; returns local-currency rows rather than adding unlike currencies."
   },
   {
     "id": "travel_yoy",
     "question": "How did travel spend in 2024 compare to 2023?",
     "tool": "travel_comparison",
-    "arguments": {"year": 2024},
+    "arguments": {
+      "year": 2024
+    },
     "expected_status": "partial",
-    "expected": {"prior_usd": "1422901.36", "current_usd": "1218643.40", "missing": "rate_to_usd for EUR in 2024-09"},
-    "sources": ["gl_transactions.csv", "chart_of_accounts.csv", "fx_rates.csv", "board_memo_2024_q2.md"],
+    "expected": {
+      "prior_usd": "1422901.36",
+      "current_usd": "1218643.40",
+      "missing": "rate_to_usd for EUR in 2024-09",
+      "difference_usd": "-204257.96",
+      "change_percent": "-14.36"
+    },
+    "sources": [
+      "gl_transactions.csv",
+      "chart_of_accounts.csv",
+      "fx_rates.csv",
+      "board_memo_2024_q2.md"
+    ],
     "notes": "Known-rate subtotal only; dated account classification excludes account 6230 from travel after 2024-06-30."
   },
   {
     "id": "consolidated_q3",
     "question": "What was total consolidated spend in Q3, in USD?",
     "tool": "consolidated_spend",
-    "arguments": {"year": 2024, "quarter": 3},
+    "arguments": {
+      "year": 2024,
+      "quarter": 3
+    },
     "expected_status": "partial",
-    "expected": {"known_rate_subtotal_usd": "10003879.95", "missing": "rate_to_usd for EUR in 2024-09"},
-    "sources": ["gl_transactions.csv", "chart_of_accounts.csv", "fx_rates.csv"],
-    "notes": "Uses latest complete accrual year; cannot state a complete consolidated total with missing FX."
+    "expected": {
+      "known_rate_subtotal_usd": "10003879.95",
+      "missing": "rate_to_usd for EUR in 2024-09"
+    },
+    "sources": [
+      "gl_transactions.csv",
+      "chart_of_accounts.csv",
+      "fx_rates.csv"
+    ],
+    "notes": "Uses the latest year with activity in all 12 accrual months; cannot state a complete consolidated total with missing FX."
   },
   {
     "id": "top_vendors",
     "question": "Who are our ten largest vendors by spend?",
     "tool": "largest_vendors",
-    "arguments": {"limit": 10},
+    "arguments": {
+      "limit": 10
+    },
     "expected_status": "partial",
-    "expected": {"row_count": 10, "known_rate_leader": "V1003", "known_rate_leader_usd": "3664650.61"},
-    "sources": ["gl_transactions.csv", "vendors.csv", "fx_rates.csv"],
+    "expected": {
+      "row_count": 10,
+      "known_rate_leader": "V1003",
+      "known_rate_leader_usd": "3664650.61",
+      "rows": [
+        {
+          "vendor_id": "V1003",
+          "spend_usd": "3664650.61"
+        },
+        {
+          "vendor_id": "V1017",
+          "spend_usd": "3577433.70"
+        },
+        {
+          "vendor_id": "V1021",
+          "spend_usd": "3457879.85"
+        },
+        {
+          "vendor_id": "V1030",
+          "spend_usd": "2812969.47"
+        },
+        {
+          "vendor_id": "V1007",
+          "spend_usd": "2231874.79"
+        },
+        {
+          "vendor_id": "V1014",
+          "spend_usd": "1726580.62"
+        },
+        {
+          "vendor_id": "V1010",
+          "spend_usd": "1706033.48"
+        },
+        {
+          "vendor_id": "V1006",
+          "spend_usd": "1669557.71"
+        },
+        {
+          "vendor_id": "V1016",
+          "spend_usd": "1568950.53"
+        },
+        {
+          "vendor_id": "V1023",
+          "spend_usd": "1507466.51"
+        }
+      ]
+    },
+    "sources": [
+      "gl_transactions.csv",
+      "vendors.csv",
+      "fx_rates.csv"
+    ],
     "notes": "All available accrual periods; ranking may change when missing FX is supplied; aliases are not silently merged."
   },
   {
     "id": "budget_q3",
     "question": "Which cost centers came in worst against budget in Q3, and what does the driver look like?",
     "tool": "budget_variance",
-    "arguments": {"year": 2024, "quarter": 3, "limit": 10},
+    "arguments": {
+      "year": 2024,
+      "quarter": 3,
+      "limit": 10
+    },
     "expected_status": "partial",
-    "expected": {"known_rate_worst": "OPS-AMER", "known_rate_variance_usd": "251112.04", "top_driver": "Outbound Freight"},
-    "sources": ["gl_transactions.csv", "budget.csv", "fx_rates.csv", "board_memo_2024_q2.md"],
+    "expected": {
+      "known_rate_worst": "OPS-AMER",
+      "known_rate_variance_usd": "251112.04",
+      "top_driver": "Outbound Freight"
+    },
+    "sources": [
+      "gl_transactions.csv",
+      "budget.csv",
+      "fx_rates.csv",
+      "board_memo_2024_q2.md"
+    ],
     "notes": "Maps OPS-NA actuals to the restated OPS-AMER budget; incomplete due to missing September EUR FX."
   },
   {
@@ -55,8 +163,14 @@
     "tool": "travel_policy_review",
     "arguments": {},
     "expected_status": "partial",
-    "expected": {"known_missing_approval_candidates": 82},
-    "sources": ["gl_transactions.csv", "fx_rates.csv", "travel_expense_policy.md"],
+    "expected": {
+      "known_missing_approval_candidates": 82
+    },
+    "sources": [
+      "gl_transactions.csv",
+      "fx_rates.csv",
+      "travel_expense_policy.md"
+    ],
     "notes": "Only the amount/approval rule is testable, and entries remain candidates rather than confirmed breaches."
   },
   {
@@ -65,8 +179,14 @@
     "tool": "headcount_cost_per_fte",
     "arguments": {},
     "expected_status": "insufficient_data",
-    "expected": {"missing": "FTE counts"},
-    "sources": ["gl_transactions.csv", "chart_of_accounts.csv", "board_memo_2024_q2.md"],
+    "expected": {
+      "missing": "FTE counts"
+    },
+    "sources": [
+      "gl_transactions.csv",
+      "chart_of_accounts.csv",
+      "board_memo_2024_q2.md"
+    ],
     "notes": "Refuses because the HR-system denominator is absent."
   },
   {
@@ -75,8 +195,12 @@
     "tool": "duplicate_payment_review",
     "arguments": {},
     "expected_status": "partial",
-    "expected": {"ledger_candidate_pairs": 9},
-    "sources": ["gl_transactions.csv"],
+    "expected": {
+      "ledger_candidate_pairs": 9
+    },
+    "sources": [
+      "gl_transactions.csv"
+    ],
     "notes": "Shows candidate ledger pairs but cannot conclude payment duplication without AP/payment data."
   }
 ]

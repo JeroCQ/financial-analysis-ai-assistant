@@ -1,0 +1,143 @@
+{
+  "execution": "deterministic/tool-only",
+  "model_called": false,
+  "tokens": null,
+  "cost": null,
+  "tool": "operating_expenses",
+  "arguments": {
+    "year": 2024,
+    "quarter": 2
+  },
+  "result": {
+    "status": "supported",
+    "summary": "Operating expenses for 2024 Q2, by cost centre and transaction currency.",
+    "data": [
+      {
+        "cost_centre": "ENG-EU",
+        "currency": "EUR",
+        "amount": "1277390.78"
+      },
+      {
+        "cost_centre": "ENG-US",
+        "currency": "USD",
+        "amount": "1254870.59"
+      },
+      {
+        "cost_centre": "MKT-US",
+        "currency": "USD",
+        "amount": "853906.97"
+      },
+      {
+        "cost_centre": "OPS-CA",
+        "currency": "CAD",
+        "amount": "2120219.20"
+      },
+      {
+        "cost_centre": "OPS-EU",
+        "currency": "EUR",
+        "amount": "2102863.14"
+      },
+      {
+        "cost_centre": "OPS-NA",
+        "currency": "USD",
+        "amount": "2096018.97"
+      },
+      {
+        "cost_centre": "SGA-CA",
+        "currency": "CAD",
+        "amount": "1035963.34"
+      },
+      {
+        "cost_centre": "SGA-EU",
+        "currency": "EUR",
+        "amount": "1036322.47"
+      },
+      {
+        "cost_centre": "SGA-US",
+        "currency": "USD",
+        "amount": "1063887.61"
+      }
+    ],
+    "sources": [
+      "gl_transactions.csv",
+      "chart_of_accounts.csv"
+    ],
+    "warnings": [],
+    "missing": [],
+    "conventions": {
+      "date_basis": "accrual_date",
+      "sign": "credits reduce spend",
+      "classification": "effective on accrual_date",
+      "rounding": "2 decimals, half up"
+    },
+    "evidence": {
+      "filters": {
+        "year": 2024,
+        "quarter": 2,
+        "statement_line": "Operating Expenses"
+      },
+      "transactions": [
+        {
+          "txn_id": "T003163",
+          "accrual_date": "2024-04-01",
+          "posting_date": "2024-04-01",
+          "entity": "MI-US",
+          "cost_centre": "SGA-US",
+          "account_code": "6230",
+          "amount": "203.87",
+          "currency": "USD",
+          "vendor_id": "V1002",
+          "doc_ref": "INV-2024-003163"
+        },
+        {
+          "txn_id": "T010439",
+          "accrual_date": "2024-04-01",
+          "posting_date": "2024-04-01",
+          "entity": "MI-NL",
+          "cost_centre": "SGA-EU",
+          "account_code": "6210",
+          "amount": "363.91",
+          "currency": "EUR",
+          "vendor_id": "V1002",
+          "doc_ref": "INV-2024-010439"
+        },
+        {
+          "txn_id": "T000823",
+          "accrual_date": "2024-04-01",
+          "posting_date": "2024-04-02",
+          "entity": "MI-US",
+          "cost_centre": "OPS-NA",
+          "account_code": "6830",
+          "amount": "3262.85",
+          "currency": "USD",
+          "vendor_id": "V1034",
+          "doc_ref": "INV-2024-000823"
+        },
+        {
+          "txn_id": "T001934",
+          "accrual_date": "2024-04-01",
+          "posting_date": "2024-04-02",
+          "entity": "MI-US",
+          "cost_centre": "ENG-US",
+          "account_code": "6220",
+          "amount": "939.51",
+          "currency": "USD",
+          "vendor_id": "V1025",
+          "doc_ref": "INV-2024-001934"
+        },
+        {
+          "txn_id": "T003176",
+          "accrual_date": "2024-04-02",
+          "posting_date": "2024-04-02",
+          "entity": "MI-US",
+          "cost_centre": "SGA-US",
+          "account_code": "6120",
+          "amount": "13665.06",
+          "currency": "USD",
+          "vendor_id": "",
+          "doc_ref": "INV-2024-003176"
+        }
+      ]
+    }
+  }
+}
