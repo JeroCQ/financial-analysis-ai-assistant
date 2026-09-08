@@ -1,0 +1,32 @@
+{
+  "execution": "deterministic/tool-only",
+  "model_called": false,
+  "tokens": null,
+  "cost": null,
+  "tool": "headcount_cost_per_fte",
+  "arguments": {},
+  "result": {
+    "status": "insufficient_data",
+    "summary": "A personnel-cost numerator exists, but no FTE denominator is present.",
+    "data": [],
+    "sources": [
+      "gl_transactions.csv",
+      "chart_of_accounts.csv",
+      "board_memo_2024_q2.md#5-headcount"
+    ],
+    "warnings": [],
+    "missing": [
+      "FTE counts by a defined period and population from the HR system"
+    ],
+    "conventions": {},
+    "evidence": {
+      "documents": [
+        {
+          "source": "board_memo_2024_q2.md",
+          "section": "5. Headcount",
+          "text": "## 5. Headcount\n\nHeadcount reporting is produced by the People team in the HR system and is not\nmaintained in the finance ledger. The Board's request for a cost-per-head series\nwill be met from the HR system separately."
+        }
+      ]
+    }
+  }
+}

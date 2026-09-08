@@ -149,6 +149,11 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+!.env.example
+traces/*.json
+!traces/samples/
+!traces/samples/*.json
 .envrc
 .venv
 env/
